@@ -1,0 +1,30 @@
+from Crypto.Util.number import *
+from random import getrandbits
+
+def gcd(a, b):
+    while b != 0:
+        a, b = b, a % b
+    return a
+
+def extended_gcd(a, b):
+    if a == 0:
+        return (b, 0, 1)
+    else:
+        g, y, x = extended_gcd(b % a, a)
+        return (g, x - (b // a) * y, y)
+
+def mod_inv(a, m):
+    g, x, y = extended_gcd(a, m)
+    if g != 1:
+        raise Exception('Modular inverse does not exist')
+    else:
+        return x % m
+
+def decrypt(p, q, e, n, ct):
+    phi = (p - 1) * (q - 1)
+    gcd, a, b = extended_gcd(e, phi)
+    d = a
+    if d < 0:
+        d += phi
+    pt = pow(ct, d, n)
+    return long_to_bytes(pt)
